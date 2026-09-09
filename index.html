@@ -36,6 +36,11 @@
           <div class="board" id="board">
             <div class="layer target-layer" id="target-layer" aria-hidden="true"></div>
             <div class="layer player-layer" id="player-layer"></div>
+            <div class="badge" id="badge" aria-live="polite">
+              <span class="badge-icon">🍔</span>
+              <span class="badge-title">Order Complete!</span>
+              <span class="badge-sub">Perfectly plated</span>
+            </div>
           </div>
         </div>
         <p class="counter-legend">
@@ -59,6 +64,7 @@
           <p id="ticket-hint"></p>
         </details>
         <p class="ticket-status" id="ticket-status" aria-live="polite"></p>
+        <span class="ticket-stamp" aria-hidden="true">Served</span>
       </article>
 
       <section class="controls" aria-label="Flexbox controls">
@@ -117,6 +123,7 @@
           <button id="serve-btn" class="btn btn-primary" type="button">&#128276; Serve Order</button>
           <button id="reset-btn" class="btn btn-secondary" type="button">&#8635; Reset Order</button>
         </div>
+        <p class="attempts">Attempts this order: <strong id="attempts">0</strong></p>
       </section>
     </aside>
   </main>

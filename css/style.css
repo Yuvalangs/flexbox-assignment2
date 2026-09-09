@@ -442,7 +442,7 @@ code { font-family: Consolas, "Courier New", monospace; }
 }
 
 .ticket-status {
-  margin: 12px 0 0;
+  margin: 12px 110px 0 0;
   min-height: 22px;
   font-weight: 600;
   font-size: 14px;
@@ -584,4 +584,110 @@ code { font-family: Consolas, "Courier New", monospace; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* --------------------------------------------------------------------------
+   Win effects — "Order Complete!" badge, confetti, feedback animations
+   -------------------------------------------------------------------------- */
+.badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 18px 34px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fff8e7, #ffe9b8);
+  border: 4px solid var(--ketchup);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 3px #fff;
+  color: var(--ketchup-dark);
+  text-align: center;
+  transform: translate(-50%, -50%) scale(0) rotate(-8deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.badge.show { animation: badge-pop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) forwards; }
+
+.badge-icon  { font-size: 42px; animation: badge-bounce 1s ease-in-out infinite; }
+.badge-title { font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+.badge-sub   { font-size: 14px; color: var(--muted); font-weight: 600; }
+
+@keyframes badge-pop {
+  0%   { transform: translate(-50%, -50%) scale(0) rotate(-20deg); opacity: 0; }
+  60%  { transform: translate(-50%, -50%) scale(1.12) rotate(4deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(-3deg); opacity: 1; }
+}
+
+@keyframes badge-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+.confetti {
+  position: absolute;
+  top: -12px;
+  z-index: 4;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0.95;
+  pointer-events: none;
+  animation: confetti-fall 2s linear forwards;
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(440px) rotate(540deg); opacity: 0; }
+}
+
+/* Wrong serve: the whole board shakes and stray ingredients flash */
+.board-wrap.shake { animation: shake 0.45s ease; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px) rotate(-0.5deg); }
+  40%      { transform: translateX(8px) rotate(0.5deg); }
+  60%      { transform: translateX(-6px); }
+  80%      { transform: translateX(6px); }
+}
+
+.ing.misplaced { animation: misplaced-flash 0.8s ease; }
+
+@keyframes misplaced-flash {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(214, 40, 40, 0); }
+  30%      { box-shadow: 0 0 0 5px rgba(214, 40, 40, 0.85); }
+}
+
+/* Ticket gets a rubber stamp once the order has been served */
+.ticket-stamp {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  padding: 4px 12px;
+  border: 3px solid var(--pickle);
+  border-radius: 6px;
+  color: var(--pickle);
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  transform: rotate(-14deg) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  transition: transform 0.35s cubic-bezier(0.2, 1.6, 0.4, 1), opacity 0.2s;
+}
+
+.ticket.done .ticket-stamp { transform: rotate(-14deg) scale(1); opacity: 0.85; }
+
+/* Nudge the player onward */
+.btn.pulse { animation: pulse 1.2s ease-in-out infinite; border-color: var(--mustard); }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 180, 0, 0.6); }
+  50%      { box-shadow: 0 0 0 8px rgba(244, 180, 0, 0); }
 }

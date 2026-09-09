@@ -19,6 +19,7 @@
   const board        = $('board');
   const targetLayer  = $('target-layer');
   const playerLayer  = $('player-layer');
+  const badge        = $('badge');
   const progressEl   = $('progress');
   const stageEl      = $('stage-indicator');
   const ticket       = $('ticket');
@@ -28,6 +29,7 @@
   const ticketText   = $('ticket-text');
   const ticketHint   = $('ticket-hint');
   const ticketStatus = $('ticket-status');
+  const attemptsEl   = $('attempts');
   const prevBtn      = $('prev-btn');
   const nextBtn      = $('next-btn');
   const serveBtn     = $('serve-btn');
@@ -40,6 +42,7 @@
   const state = {
     index: 0,
     completed: loadProgress(),
+    attempts: {},   // level id -> serve attempts this session
     solved: false   // has the current order been served correctly
   };
 
@@ -133,6 +136,8 @@
 
     // Board
     board.classList.toggle('lg', level.size === 'lg');
+    boardWrap.classList.remove('shake');
+    hideBadge();
 
     targetLayer.innerHTML = '';
     playerLayer.innerHTML = '';
@@ -151,7 +156,8 @@
     setControls(level.initial);
     syncPlayerLayer();
 
-    // Navigation
+    // Attempts + navigation
+    attemptsEl.textContent = state.attempts[level.id] || 0;
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === LEVELS.length - 1;
     nextBtn.classList.remove('pulse');
@@ -176,6 +182,9 @@
     const ings = playerLayer.children;
     let misplaced = 0;
 
+    [...ings].forEach((el) => el.classList.remove('misplaced'));
+    void playerLayer.offsetWidth; // let the flash animation replay on repeat serves
+
     for (let i = 0; i < ings.length; i++) {
       const a = ings[i];
       const b = plates[i];
@@ -191,12 +200,19 @@
   }
 
   function serveOrder() {
+    const level = currentLevel();
+    state.attempts[level.id] = (state.attempts[level.id] || 0) + 1;
+    attemptsEl.textContent = state.attempts[level.id];
+
     const result = checkOrder();
     if (result.ok) {
       completeOrder();
     } else {
       const noun = result.misplaced === 1 ? 'ingredient is' : 'ingredients are';
       setStatus(`Sent back! ${result.misplaced} of ${result.total} ${noun} off the plate.`, 'error');
+      boardWrap.classList.remove('shake');
+      void boardWrap.offsetWidth; // restart the animation
+      boardWrap.classList.add('shake');
     }
   }
 
@@ -209,6 +225,7 @@
     setStatus('Order complete! Perfectly plated.', 'ok');
     ticket.classList.add('done');
     serveBtn.disabled = true;
+    showBadge();
     if (state.index < LEVELS.length - 1) nextBtn.classList.add('pulse');
     renderProgress();
   }
@@ -219,8 +236,35 @@
     syncPlayerLayer();
     state.solved = false;
     serveBtn.disabled = false;
+    hideBadge();
+    boardWrap.classList.remove('shake');
     [...playerLayer.children].forEach((el) => el.classList.remove('misplaced'));
     setStatus('Order reset to the starting recipe.');
+  }
+
+  // ---- Celebration -------------------------------------------------------
+  function showBadge() {
+    badge.classList.add('show');
+    spawnConfetti();
+  }
+
+  function hideBadge() {
+    badge.classList.remove('show');
+    board.querySelectorAll('.confetti').forEach((c) => c.remove());
+  }
+
+  function spawnConfetti() {
+    const colors = ['#d62828', '#f4b400', '#6a994e', '#fff8e7', '#f2b866'];
+    for (let i = 0; i < 40; i++) {
+      const piece = document.createElement('span');
+      piece.className = 'confetti';
+      piece.style.left = `${Math.random() * 100}%`;
+      piece.style.background = colors[i % colors.length];
+      piece.style.animationDelay = `${Math.random() * 0.6}s`;
+      piece.style.animationDuration = `${1.6 + Math.random() * 1.2}s`;
+      piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+      board.appendChild(piece);
+    }
   }
 
   // ---- Responsive board scaling -----------------------------------------
