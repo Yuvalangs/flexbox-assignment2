@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flex Burger Kitchen &mdash; Learn CSS Flexbox</title>
+  <meta name="description" content="A burger-kitchen game that teaches CSS Flexbox. Plate every order using flex-direction, justify-content, align-items and flex-wrap.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">🍔</span>
+      <div>
+        <h1>Flex Burger Kitchen</h1>
+        <p class="tagline">Plate every order with CSS Flexbox</p>
+      </div>
+    </div>
+    <nav class="progress" id="progress" aria-label="Order progress"></nav>
+  </header>
+
+  <main class="kitchen">
+    <!-- ===== Prep station: fixed 600x400 board on a wooden counter ===== -->
+    <section class="station" aria-label="Prep station">
+      <div class="station-head">
+        <span class="stage-indicator" id="stage-indicator">Order 1 of 6</span>
+        <div class="order-nav">
+          <button id="prev-btn" class="btn btn-ghost" type="button" title="Previous order">&#9664; Prev</button>
+          <button id="next-btn" class="btn btn-ghost" type="button" title="Next order">Next &#9654;</button>
+        </div>
+      </div>
+
+      <div class="counter">
+        <div class="board-wrap" id="board-wrap">
+          <div class="board" id="board">
+            <div class="layer target-layer" id="target-layer" aria-hidden="true"></div>
+            <div class="layer player-layer" id="player-layer"></div>
+          </div>
+        </div>
+        <p class="counter-legend">
+          <span class="legend-item"><i class="legend-plate"></i> target plate</span>
+          <span class="legend-item"><i class="legend-ing"></i> your ingredient</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== Order ticket + flex controls ===== -->
+    <aside class="panel">
+      <article class="ticket" id="ticket">
+        <div class="ticket-head">
+          <span class="ticket-no" id="ticket-no">ORDER #1</span>
+          <span class="ticket-meta" id="ticket-meta">Table 4</span>
+        </div>
+        <h2 class="ticket-title" id="ticket-title">Patties on the grill</h2>
+        <p class="ticket-text" id="ticket-text"></p>
+        <details class="ticket-hint">
+          <summary>Chef's tip</summary>
+          <p id="ticket-hint"></p>
+        </details>
+        <p class="ticket-status" id="ticket-status" aria-live="polite"></p>
+      </article>
+
+      <section class="controls" aria-label="Flexbox controls">
+        <div class="code-line code-open"><span class="sel">.prep-line</span> {</div>
+        <div class="code-line code-static"><span class="prop">display</span>: <span class="val">flex</span>;</div>
+
+        <div class="control-row" data-prop="flex-direction">
+          <label for="flex-direction"><span class="prop">flex-direction</span>:</label>
+          <select id="flex-direction" data-prop="flex-direction">
+            <option value="row">row</option>
+            <option value="row-reverse">row-reverse</option>
+            <option value="column">column</option>
+            <option value="column-reverse">column-reverse</option>
+          </select>
+          <span class="semi">;</span>
+        </div>
+
+        <div class="control-row" data-prop="justify-content">
+          <label for="justify-content"><span class="prop">justify-content</span>:</label>
+          <select id="justify-content" data-prop="justify-content">
+            <option value="flex-start">flex-start</option>
+            <option value="flex-end">flex-end</option>
+            <option value="center">center</option>
+            <option value="space-between">space-between</option>
+            <option value="space-around">space-around</option>
+            <option value="space-evenly">space-evenly</option>
+          </select>
+          <span class="semi">;</span>
+        </div>
+
+        <div class="control-row" data-prop="align-items">
+          <label for="align-items"><span class="prop">align-items</span>:</label>
+          <select id="align-items" data-prop="align-items">
+            <option value="flex-start">flex-start</option>
+            <option value="flex-end">flex-end</option>
+            <option value="center">center</option>
+            <option value="baseline">baseline</option>
+            <option value="stretch">stretch</option>
+          </select>
+          <span class="semi">;</span>
+        </div>
+
+        <div class="control-row" data-prop="flex-wrap">
+          <label for="flex-wrap"><span class="prop">flex-wrap</span>:</label>
+          <select id="flex-wrap" data-prop="flex-wrap">
+            <option value="nowrap">nowrap</option>
+            <option value="wrap">wrap</option>
+            <option value="wrap-reverse">wrap-reverse</option>
+          </select>
+          <span class="semi">;</span>
+        </div>
+
+        <div class="code-line code-close">}</div>
+
+        <div class="actions">
+          <button id="serve-btn" class="btn btn-primary" type="button">&#128276; Serve Order</button>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <p>Built with plain HTML, CSS &amp; JavaScript &middot; The prep board is a real <code>display: flex</code> container &mdash; no Grid, no libraries.</p>
+  </footer>
+
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
