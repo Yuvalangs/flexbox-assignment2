@@ -1,0 +1,587 @@
+/* ==========================================================================
+   Flex Burger Kitchen — styles
+   Theme: fast-food kitchen. Wooden counter, steel prep board, paper tickets.
+   ========================================================================== */
+
+:root {
+  --wood-dark: #5a3418;
+  --wood: #7b4a24;
+  --wood-light: #9a6233;
+  --steel: #d9dde2;
+  --steel-dark: #b8bec6;
+  --paper: #fff8e7;
+  --ink: #2b2118;
+  --muted: #7a6a5c;
+  --ketchup: #d62828;
+  --ketchup-dark: #a61b1b;
+  --mustard: #f4b400;
+  --mustard-dark: #c98f00;
+  --pickle: #6a994e;
+  --cream: #fdf1d6;
+  --plate: rgba(255, 255, 255, 0.55);
+  --plate-ring: rgba(70, 50, 30, 0.45);
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+
+  --board-w: 600px;
+  --board-h: 400px;
+  --board-pad: 20px;
+  --gap: 12px;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at top, rgba(255, 220, 150, 0.25), transparent 60%),
+    repeating-linear-gradient(90deg, var(--wood) 0 140px, var(--wood-light) 140px 142px, var(--wood-dark) 142px 145px),
+    var(--wood);
+  background-attachment: fixed;
+}
+
+/* Subtle wood grain */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0 2px, transparent 2px 7px);
+  opacity: 0.6;
+  z-index: -1;
+}
+
+code { font-family: Consolas, "Courier New", monospace; }
+
+/* --------------------------------------------------------------------------
+   Header / progress
+   -------------------------------------------------------------------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 28px;
+  background: linear-gradient(180deg, var(--ketchup), var(--ketchup-dark));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border-bottom: 4px solid var(--mustard);
+}
+
+.brand { display: flex; align-items: center; gap: 14px; }
+
+.brand-logo {
+  font-size: 44px;
+  line-height: 1;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.35));
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.tagline { margin: 2px 0 0; font-size: 14px; opacity: 0.9; }
+
+.progress { display: flex; gap: 8px; }
+
+.progress-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.progress-dot:hover { transform: translateY(-2px); }
+
+.progress-dot.done {
+  background: var(--pickle);
+  border-color: #cfe8c3;
+}
+
+.progress-dot.current {
+  background: var(--mustard);
+  border-color: #fff;
+  color: var(--ink);
+  transform: scale(1.12);
+}
+
+/* --------------------------------------------------------------------------
+   Layout wrapper: board on the left, ticket + controls on the right
+   -------------------------------------------------------------------------- */
+.kitchen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 1120px;
+  margin: 28px auto;
+  padding: 0 20px;
+}
+
+.station { flex: 1 1 620px; max-width: 700px; min-width: 0; }
+.panel   { flex: 1 1 320px; max-width: 400px; display: flex; flex-direction: column; gap: 18px; }
+
+.station-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: var(--cream);
+}
+
+.stage-indicator {
+  font-weight: 700;
+  font-size: 18px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.order-nav { display: flex; gap: 8px; }
+
+/* --------------------------------------------------------------------------
+   Counter + fixed-size prep board
+   -------------------------------------------------------------------------- */
+.counter {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, #6b3f1d, #4c2b12);
+  box-shadow: var(--shadow), inset 0 2px 0 rgba(255, 255, 255, 0.12);
+  border: 2px solid #3a2009;
+}
+
+/* The wrap keeps a fixed footprint; JS scales the board inside it on small screens */
+.board-wrap {
+  width: var(--board-w);
+  height: var(--board-h);
+  margin: 0 auto;
+  position: relative;
+}
+
+.board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--board-w);
+  height: var(--board-h);
+  transform-origin: top left;
+  border-radius: 10px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 8px),
+    linear-gradient(135deg, #e6e9ed 0%, var(--steel) 45%, #c9ced5 100%);
+  box-shadow:
+    inset 0 0 0 3px #f2f4f6,
+    inset 0 0 0 5px var(--steel-dark),
+    inset 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Faint measuring grid so players can "see" positions */
+.board::before {
+  content: "";
+  position: absolute;
+  inset: var(--board-pad);
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(60, 60, 70, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(60, 60, 70, 0.12) 1px, transparent 1px);
+  background-size: 40px 40px;
+  border: 1px dashed rgba(60, 60, 70, 0.25);
+}
+
+/* Both layers are identical flex containers stacked on top of each other */
+.layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  padding: var(--board-pad);
+  gap: var(--gap);
+}
+
+.target-layer { z-index: 1; }
+.player-layer { z-index: 2; }
+
+.counter-legend {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--cream);
+}
+
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+.legend-plate, .legend-ing {
+  width: 22px;
+  height: 14px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.legend-plate {
+  background: var(--plate);
+  border: 2px dashed var(--plate-ring);
+}
+
+.legend-ing { background: linear-gradient(180deg, #7a4a2a, #4a2a14); }
+
+/* --------------------------------------------------------------------------
+   Ingredients — pure CSS burger parts
+   Every ingredient has a fixed size so layout is deterministic.
+   -------------------------------------------------------------------------- */
+.ing, .plate {
+  flex-shrink: 0;
+  position: relative;
+  width: calc(var(--w) * var(--s, 1));
+  height: calc(var(--h) * var(--s, 1));
+  border-radius: var(--r, 10px);
+}
+
+.board.lg { --s: 1.4; }
+
+.ing { transition: transform 0.15s ease; }
+.ing:hover { transform: translateY(-2px) scale(1.02); z-index: 3; }
+
+/* Target outline: a plate / wrapping paper where the ingredient must land */
+.plate {
+  background: var(--plate);
+  border: 2px dashed var(--plate-ring);
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: inherit;
+  background:
+    repeating-linear-gradient(45deg, rgba(214, 40, 40, 0.10) 0 6px, transparent 6px 12px),
+    repeating-linear-gradient(-45deg, rgba(214, 40, 40, 0.10) 0 6px, transparent 6px 12px);
+}
+
+/* Sizes per ingredient type */
+.type-patty      { --w: 120px; --h: 44px;  --r: 22px; }
+.type-cheese     { --w: 110px; --h: 40px;  --r: 6px;  }
+.type-lettuce    { --w: 130px; --h: 46px;  --r: 30px 26px 34px 28px / 20px 24px 22px 26px; }
+.type-tomato     { --w: 60px;  --h: 60px;  --r: 50%; }
+.type-bun-top    { --w: 140px; --h: 64px;  --r: 70px 70px 14px 14px / 56px 56px 12px 12px; }
+.type-bun-bottom { --w: 140px; --h: 40px;  --r: 10px 10px 26px 26px; }
+.type-slider     { --w: 90px;  --h: 80px;  --r: 40px 40px 22px 22px / 34px 34px 18px 18px; }
+
+/* Patty: charred edges + grill marks */
+.ing.type-patty {
+  background:
+    repeating-linear-gradient(115deg, rgba(0, 0, 0, 0.22) 0 4px, transparent 4px 18px),
+    radial-gradient(ellipse at 40% 35%, #8a5230, #5a3218 70%, #3d2010);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* Cheese: melty yellow square with a glossy highlight */
+.ing.type-cheese {
+  background: linear-gradient(180deg, #ffd54a, #f4b400 60%, #d99a00);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.12), 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ing.type-cheese::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 55%;
+  top: 8px;
+  height: 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+/* Lettuce: leafy green blob with a lighter vein */
+.ing.type-lettuce {
+  background: radial-gradient(ellipse at 40% 40%, #a2d46a, #6a994e 60%, #4d7a37);
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ing.type-lettuce::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 45%;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Tomato: juicy slice with an inner ring and seeds */
+.ing.type-tomato {
+  background: radial-gradient(circle at 40% 35%, #ff7b6b, #d62828 55%, #a61b1b);
+  box-shadow: inset 0 0 0 5px rgba(255, 170, 150, 0.55), 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ing.type-tomato::after {
+  content: "";
+  position: absolute;
+  inset: 30%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, #ffd4c4 3px, transparent 4px),
+    radial-gradient(circle at 70% 60%, #ffd4c4 3px, transparent 4px),
+    #e14b3f;
+}
+
+/* Buns: golden with sesame seeds */
+.ing.type-bun-top {
+  background:
+    radial-gradient(circle at 22% 45%, #fff2c2 4px, transparent 5px),
+    radial-gradient(circle at 42% 28%, #fff2c2 4px, transparent 5px),
+    radial-gradient(circle at 62% 50%, #fff2c2 4px, transparent 5px),
+    radial-gradient(circle at 80% 32%, #fff2c2 4px, transparent 5px),
+    linear-gradient(180deg, #f2b866, #d98e3d 70%, #b8722c);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.12), 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.ing.type-bun-bottom {
+  background: linear-gradient(180deg, #f0b866, #d18a3a 60%, #a86a28);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Slider: a whole mini burger drawn with stacked gradient stripes */
+.ing.type-slider {
+  background:
+    radial-gradient(circle at 30% 14%, #fff2c2 3px, transparent 4px),
+    radial-gradient(circle at 62% 10%, #fff2c2 3px, transparent 4px),
+    linear-gradient(180deg,
+      #f2b866 0 36%,
+      #6a994e 36% 46%,
+      #f4b400 46% 54%,
+      #5a3218 54% 76%,
+      #d18a3a 76% 100%);
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.15), 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Order ticket (paper receipt)
+   -------------------------------------------------------------------------- */
+.ticket {
+  position: relative;
+  background: var(--paper);
+  padding: 18px 20px 20px;
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+  background-image: repeating-linear-gradient(0deg, transparent 0 26px, rgba(0, 0, 0, 0.04) 26px 27px);
+}
+
+/* Zig-zag torn edge at the bottom */
+.ticket::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 10px;
+  background: linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0 / 20px 10px,
+              linear-gradient(225deg, var(--paper) 50%, transparent 50%) 10px 0 / 20px 10px;
+  background-repeat: repeat-x;
+}
+
+.ticket-head {
+  display: flex;
+  justify-content: space-between;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 2px dashed rgba(0, 0, 0, 0.15);
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.ticket-no { font-weight: 700; color: var(--ketchup); }
+
+.ticket-title { margin: 0 0 8px; font-size: 22px; }
+
+.ticket-text { margin: 0 0 12px; line-height: 1.5; font-size: 15px; }
+
+.ticket-hint summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--pickle);
+  outline: none;
+}
+
+.ticket-hint p {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--mustard);
+  background: rgba(244, 180, 0, 0.12);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ticket-hint code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.ticket-status {
+  margin: 12px 0 0;
+  min-height: 22px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ticket-status.error { color: var(--ketchup); }
+.ticket-status.ok    { color: var(--pickle); }
+
+/* --------------------------------------------------------------------------
+   Controls (styled like a CSS rule)
+   -------------------------------------------------------------------------- */
+.controls {
+  background: #1f1a17;
+  color: #eee5d8;
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 15px;
+}
+
+.code-line { padding: 4px 0; }
+.code-static { padding-left: 22px; opacity: 0.7; }
+.sel  { color: #ffb86b; }
+.prop { color: #8be9fd; }
+.val  { color: #f1fa8c; }
+
+.control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0 5px 22px;
+  border-radius: 8px;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.control-row:hover { background: rgba(255, 255, 255, 0.05); }
+
+.control-row label { white-space: nowrap; }
+
+.control-row select {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: inherit;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 2px solid #4a3f38;
+  background: #2c2521;
+  color: #f1fa8c;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.control-row select:focus {
+  outline: none;
+  border-color: var(--mustard);
+  box-shadow: 0 0 0 3px rgba(244, 180, 0, 0.3);
+}
+
+.control-row.locked { opacity: 0.4; }
+.control-row.locked select { cursor: not-allowed; }
+.control-row.locked label::after { content: " 🔒"; font-size: 12px; }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.attempts {
+  margin: 12px 0 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 13px;
+  color: #b8ab9c;
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover:not(:disabled) { filter: brightness(1.08); }
+.btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+.btn-primary   { flex: 1 1 auto; background: linear-gradient(180deg, #ff5a4e, var(--ketchup)); color: #fff; }
+.btn-secondary { background: linear-gradient(180deg, #ffd24a, var(--mustard)); color: var(--ink); }
+
+.btn-ghost {
+  background: rgba(255, 248, 231, 0.12);
+  color: var(--cream);
+  border: 2px solid rgba(255, 248, 231, 0.35);
+  box-shadow: none;
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.btn-ghost:hover:not(:disabled) { background: rgba(255, 248, 231, 0.22); }
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+.footer {
+  text-align: center;
+  color: var(--cream);
+  font-size: 13px;
+  padding: 10px 20px 28px;
+  opacity: 0.85;
+}
+
+.footer code { background: rgba(0, 0, 0, 0.3); padding: 1px 6px; border-radius: 4px; }
+
+/* --------------------------------------------------------------------------
+   Responsive shell — the board itself stays 600x400 and is scaled by JS
+   -------------------------------------------------------------------------- */
+@media (max-width: 720px) {
+  .topbar { padding: 14px 16px; justify-content: center; text-align: center; }
+  .brand { flex-direction: column; }
+  .topbar h1 { font-size: 22px; }
+  .kitchen { margin: 18px auto; padding: 0 12px; gap: 18px; }
+  .station, .panel { flex-basis: 100%; max-width: 100%; }
+  .counter { padding: 10px; }
+  .controls { font-size: 14px; }
+  .control-row { flex-wrap: wrap; padding-left: 12px; }
+  .control-row select { flex-basis: 100%; }
+  .semi { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
