@@ -237,3 +237,48 @@ h1, h2, h3 { margin: 0; }
   color: var(--muted);
   font-size: 0.85rem;
 }
+
+/* ===== feedback animations ===== */
+@keyframes shake {
+  0%, 100% { transform: scale(var(--board-scale)) translateX(0); }
+  25% { transform: scale(var(--board-scale)) translateX(-8px); }
+  75% { transform: scale(var(--board-scale)) translateX(8px); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 0 rgba(52, 209, 191, 0); }
+  to { box-shadow: 0 0 26px rgba(52, 209, 191, 0.55); }
+}
+
+.board .ship { animation: pop-in 0.28s ease both; }
+
+.board.wrong {
+  animation: shake 0.4s ease;
+  border-color: var(--danger);
+}
+
+.board.solved {
+  border-color: var(--accent-2);
+  border-style: solid;
+  animation: glow 0.5s ease forwards;
+}
+
+.board.solved .ship {
+  background: linear-gradient(150deg, #34d1bf, #1f8f83);
+}
+
+.board,
+.ship {
+  transition: justify-content 0.2s ease, align-items 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board .ship,
+  .board.wrong,
+  .board.solved { animation: none; }
+}
