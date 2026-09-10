@@ -9,6 +9,9 @@
   const hintBtn = document.getElementById('hintBtn');
   const levelIndicator = document.getElementById('levelIndicator');
   const resetBtn = document.getElementById('resetBtn');
+  const checkBtn = document.getElementById('checkBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const feedback = document.getElementById('feedback');
 
   let currentIndex = 0;
   let styles = {};
@@ -90,14 +93,62 @@
     hintBox.textContent = level.hint;
     hintBox.hidden = true;
 
+    board.classList.remove('solved', 'wrong');
+    showMessage('', '');
+    checkBtn.disabled = false;
+    nextBtn.hidden = true;
+
     renderShips(level);
     renderControls(level);
     applyStyles();
   }
 
+  /* בדיקה האם הערכים שנבחרו תואמים לפתרון של השלב */
+  function isSolved(level) {
+    return Object.keys(level.solution).every(function (prop) {
+      return level.solution[prop].indexOf(styles[prop]) !== -1;
+    });
+  }
+
+  function showMessage(text, type) {
+    feedback.textContent = text;
+    feedback.className = 'feedback ' + type;
+  }
+
+  /* בדיקת הפתרון של המשתמש */
+  function checkSolution() {
+    const level = LEVELS[currentIndex];
+
+    if (isSolved(level)) {
+      board.classList.add('solved');
+      showMessage('כל הכבוד! הסידור נכון.', 'ok');
+      checkBtn.disabled = true;
+      nextBtn.hidden = currentIndex === LEVELS.length - 1;
+      if (currentIndex === LEVELS.length - 1) {
+        showMessage('סיימתם את כל השלבים! כל הכבוד.', 'ok');
+      }
+    } else {
+      board.classList.remove('solved');
+      board.classList.add('wrong');
+      window.setTimeout(function () { board.classList.remove('wrong'); }, 450);
+      showMessage('עדיין לא. בדקו את הסידור המבוקש ונסו שוב.', 'bad');
+    }
+  }
+
+  /* מעבר לשלב הבא, ללא טעינה מחדש של העמוד */
+  function nextLevel() {
+    if (currentIndex < LEVELS.length - 1) {
+      loadLevel(currentIndex + 1);
+    }
+  }
+
   /* איפוס השלב הנוכחי לערכי ברירת המחדל */
   function resetLevel() {
     styles = startStyles(LEVELS[currentIndex]);
+    board.classList.remove('solved', 'wrong');
+    showMessage('השלב אופס לערכי ברירת המחדל.', '');
+    checkBtn.disabled = false;
+    nextBtn.hidden = true;
     renderControls(LEVELS[currentIndex]);
     applyStyles();
   }
@@ -108,6 +159,8 @@
   });
 
   resetBtn.addEventListener('click', resetLevel);
+  checkBtn.addEventListener('click', checkSolution);
+  nextBtn.addEventListener('click', nextLevel);
 
   loadLevel(0);
 })();
