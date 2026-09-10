@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flex Space – משחק ללימוד Flexbox</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="logo"><span class="logo-icon">🚀</span> Flex Space</h1>
+    <div class="stats">
+      <span class="stat" id="levelIndicator">שלב 1 מתוך 1</span>
+      <span class="stat" id="scoreIndicator">ניקוד: 0</span>
+      <span class="stat" id="attemptsIndicator">ניסיונות: 0</span>
+    </div>
+  </header>
+
+  <nav class="level-picker" id="levelPicker" aria-label="בחירת שלב"></nav>
+
+  <main class="layout">
+    <section class="panel mission-panel">
+      <h2 class="panel-title">המשימה</h2>
+      <p class="mission-text" id="missionText"></p>
+      <button class="btn ghost" id="hintBtn" type="button">הצגת רמז</button>
+      <p class="hint" id="hintBox" hidden></p>
+    </section>
+
+    <section class="panel board-panel">
+      <div class="board-wrap">
+        <div class="board" id="board" dir="ltr"></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="checkBtn" type="button">בדיקת הפתרון</button>
+        <button class="btn" id="resetBtn" type="button">איפוס השלב</button>
+        <button class="btn success" id="nextBtn" type="button" hidden>לשלב הבא</button>
+      </div>
+      <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="panel controls-panel">
+      <h2 class="panel-title">מאפייני Flexbox</h2>
+      <div class="controls" id="controls"></div>
+      <h3 class="panel-subtitle">הקוד שנוצר</h3>
+      <pre class="code" id="codePreview" dir="ltr"></pre>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>תרגיל מספר 2 – משחק ללימוד Flexbox</p>
+  </footer>
+
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
