@@ -282,3 +282,26 @@ h1, h2, h3 { margin: 0; }
   .board.wrong,
   .board.solved { animation: none; }
 }
+
+/* ===== responsive =====
+   הלוח שומר על מידות קבועות בפיקסלים בכל גודל מסך,
+   וכדי להיכנס למסכים צרים הוא מוקטן באמצעות transform בלבד,
+   כך שהפתרון של כל שלב נשאר זהה בכל רזולוציה. */
+@media (max-width: 900px) {
+  .layout { padding: 16px 14px 32px; }
+  .panel { max-width: 100%; }
+}
+
+@media (max-width: 520px) {
+  :root { --board-scale: 0.82; }
+  .topbar { padding: 14px 16px; }
+  .logo { font-size: 1.2rem; }
+  .stat { font-size: 0.8rem; padding: 5px 10px; }
+  .level-picker { padding: 12px 14px 0; }
+  .level-dot { width: 34px; height: 34px; }
+  .actions .btn { flex: 1 1 auto; }
+}
+
+@media (max-width: 400px) {
+  :root { --board-scale: 0.68; }
+}
