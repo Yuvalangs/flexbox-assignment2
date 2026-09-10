@@ -12,9 +12,76 @@
   const checkBtn = document.getElementById('checkBtn');
   const nextBtn = document.getElementById('nextBtn');
   const feedback = document.getElementById('feedback');
+  const levelPicker = document.getElementById('levelPicker');
+  const scoreIndicator = document.getElementById('scoreIndicator');
+  const attemptsIndicator = document.getElementById('attemptsIndicator');
+
+  const STORAGE_KEY = 'flex-space-progress';
 
   let currentIndex = 0;
   let styles = {};
+  let attempts = 0;
+  let progress = { completed: [], score: 0, lastLevel: 0 };
+
+  /* טעינת ההתקדמות השמורה מהדפדפן */
+  function loadProgress() {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+      if (saved && Array.isArray(saved.completed)) {
+        progress = {
+          completed: saved.completed.filter(function (i) { return i < LEVELS.length; }),
+          score: saved.score || 0,
+          lastLevel: saved.lastLevel || 0
+        };
+      }
+    } catch (err) {
+      progress = { completed: [], score: 0, lastLevel: 0 };
+    }
+  }
+
+  function saveProgress() {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+    } catch (err) {
+      /* אם אחסון מקומי חסום, המשחק ימשיך לעבוד ללא שמירה */
+    }
+  }
+
+  function isCompleted(index) {
+    return progress.completed.indexOf(index) !== -1;
+  }
+
+  /* השלב הגבוה ביותר שנפתח לשחקן */
+  function highestUnlocked() {
+    let unlocked = 0;
+    while (unlocked < LEVELS.length - 1 && isCompleted(unlocked)) {
+      unlocked++;
+    }
+    return unlocked;
+  }
+
+  function updateStats() {
+    scoreIndicator.textContent = 'ניקוד: ' + progress.score;
+    attemptsIndicator.textContent = 'ניסיונות בשלב: ' + attempts;
+  }
+
+  /* כפתורי מעבר בין שלבים שכבר נפתחו */
+  function renderPicker() {
+    levelPicker.innerHTML = '';
+    const unlocked = highestUnlocked();
+    LEVELS.forEach(function (level, index) {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'level-dot';
+      dot.textContent = index + 1;
+      dot.title = level.title;
+      if (isCompleted(index)) { dot.classList.add('done'); }
+      if (index === currentIndex) { dot.classList.add('current'); }
+      dot.disabled = index > unlocked && !isCompleted(index);
+      dot.addEventListener('click', function () { loadLevel(index); });
+      levelPicker.appendChild(dot);
+    });
+  }
 
   /* ערכי הפתיחה של שלב מסוים */
   function startStyles(level) {
@@ -88,6 +155,7 @@
     const level = LEVELS[index];
 
     styles = startStyles(level);
+    attempts = 0;
     missionText.textContent = level.mission;
     levelIndicator.textContent = 'שלב ' + (index + 1) + ' מתוך ' + LEVELS.length;
     hintBox.textContent = level.hint;
@@ -100,6 +168,8 @@
 
     renderShips(level);
     renderControls(level);
+    renderPicker();
+    updateStats();
     applyStyles();
   }
 
@@ -119,7 +189,19 @@
   function checkSolution() {
     const level = LEVELS[currentIndex];
 
+    attempts++;
+    updateStats();
+
     if (isSolved(level)) {
+      if (!isCompleted(currentIndex)) {
+        progress.completed.push(currentIndex);
+        progress.score += Math.max(20, 100 - (attempts - 1) * 20);
+      }
+      progress.lastLevel = Math.min(currentIndex + 1, LEVELS.length - 1);
+      saveProgress();
+      updateStats();
+      renderPicker();
+
       board.classList.add('solved');
       showMessage('כל הכבוד! הסידור נכון.', 'ok');
       checkBtn.disabled = true;
@@ -162,5 +244,6 @@
   checkBtn.addEventListener('click', checkSolution);
   nextBtn.addEventListener('click', nextLevel);
 
-  loadLevel(0);
+  loadProgress();
+  loadLevel(Math.min(progress.lastLevel, LEVELS.length - 1));
 })();
